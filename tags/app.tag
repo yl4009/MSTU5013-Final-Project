@@ -6,12 +6,14 @@
   		<div class="col">
 				<div if={ room }>
 					<h1>Room: { room.id }</h1>
-					<div each={ roomPlayer in roomPlayers }>
-						<strong>{ roomPlayer.name }</strong>: { roomPlayer.id }
+					<div class="table">
+						<div if={ roomPlayers.length == 4 } class="clock">
+
+						</div>
 					</div>
-					<!-- <p>
-						...are in the room.
-					</p> -->
+					<div each={ roomPlayer in roomPlayers }>
+						<strong>{ roomPlayer.name }</strong>: <span class="bg-info" role="progressbar" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100" show={ roomPlayer.name == this.player.displayName }>BALANCE</span>
+					</div>
 				</div>
   		</div>
   	</div>
@@ -80,8 +82,6 @@
 						this.roomPlayers.push(doc.data());
 					});
 
-					// console.log(this.roomPlayers);
-
 					this.update();
 				});
 			});
@@ -92,5 +92,15 @@
   <style>
     /* CSS */
     :scope {}
+		.table {
+			width: 600px;
+			height: 300px;
+			background-color: #f8f9fa;
+		}
+		.bg-info {
+			width: 30%;
+			color: white;
+			padding: 3px;
+		}
   </style>
 </app>

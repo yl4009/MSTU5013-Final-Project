@@ -1,7 +1,7 @@
 <navbar>
   <!-- HTML -->
 	<nav class="navbar navbar-expand-lg navbar-light bg-light">
-	  <!-- <a class="navbar-brand" href="#">Social Sound</a> -->
+	  <a class="navbar-brand" href="#">Bidding Game</a>
 	  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
 	    <span class="navbar-toggler-icon"></span>
 	  </button>
@@ -10,6 +10,7 @@
 	    <ul class="navbar-nav mr-auto">
 	    </ul>
 	    <div class="form-inline my-2 my-lg-0">
+				<span if={ player } class="navbar-text mr-3"><img src={ player.photoURL }></span>
 				<span if={ player } class="navbar-text mr-3">{ player.displayName }</span>
 				<input if={ player && !room } class="form-control mr-sm-2" ref="roomCode" placeholder="Room Code" onkeypress={ enterRoomCode }>
 				<button show={ room } class="btn btn-outline-warning my-2 my-sm-0 mr-sm-2" type="button" onclick={ exitRoom }>Exit Room</button>
@@ -47,9 +48,8 @@
   <style>
     /* CSS */
     :scope {}
-    .special {
-      background-color: #333333;
-      color: #FFFFFF;
-    }
+		img {
+			width: 30px;
+		}
   </style>
 </navbar>
