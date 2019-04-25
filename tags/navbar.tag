@@ -34,7 +34,6 @@
 
 		enterRoomCode(event) {
 			if (event.code === "Enter") {
-				console.log(event);
 				let roomCode = event.target.value;
 				observer.trigger('codeEntered', roomCode);
 			}

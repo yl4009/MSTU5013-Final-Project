@@ -4,15 +4,42 @@
   <div class="container">
   	<div class="row">
   		<div class="col">
-				<div if={ room }>
-					<h1>Room: { room.id }</h1>
-					<div class="table">
-						<div if={ roomPlayers.length == 4 } class="clock">
 
+				<div if={ room }>
+					<h1>Room: { room.id }</h1><button class="btn btn-secondary" type="button" onclick={ toggle }>TOGGLE</button>
+					<div if={ currentBoard == 'round' }>
+						<span class="badge badge-primary">ROUND: { round }</span>
+						<span class="badge badge-sm badge-warning">Target of Bidding: <i class="fas fa-coins"></i> { bidValue } </span>
+						<span class="badge badge-info"><bidTimer></bidTimer></span>
+					</div>
+					<div class="table">
+						<div if={ currentBoard == 'start' && roomPlayers.length == 3 } class="clock">
+							<timer></timer>
+						</div>
+						<div if={ currentBoard == 'round' }>
+							<!-- here need to grab data from database to show the highest and second highest players-->
+							<span></span>
+							<span></span>
+						</div>
+						<div id="winnerBoard" if={ currentBoard == 'winner' }>
+							<i class="fas fa-crown"></i>
+							<div><img id="winnerImg" src={ player.photoURL }></div>
+							<div>{ player.displayName }</div>
+						</div>
+						<div id="rankBoard" if={ currentBoard == 'rank' }>
+							<p id="rank">Rank</p>
+							<div each={ roomPlayer in roomPlayers}>
+								<img id="rankImg" src={ roomPlayer.photo }>
+								<span><strong>{ roomPlayer.name }</strong></span>
+								<span class="badge badge-info">{ roomPlayer.balance }</span>
+							</div>
 						</div>
 					</div>
-					<div each={ roomPlayer in roomPlayers }>
-						<strong>{ roomPlayer.name }</strong>: <span class="bg-info" role="progressbar" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100" show={ roomPlayer.name == this.player.displayName }>BALANCE</span>
+					<div if={ currentBoard !== 'rank'} each={ roomPlayer in roomPlayers }>
+						<strong>{ roomPlayer.name }</strong>:
+						<input id="bidInput" class="mr-sm-2" type="number" min="0" max="50" ref="bidInput" placeholder="Write your bid here" show={ currentBoard == 'round' && roomPlayer.name == this.player.displayName }>
+						<button class="btn btn-sm btn-success" type="button" onclick={ bid } show={ currentBoard == 'round' && roomPlayer.name == this.player.displayName }>BID</button>
+						<span class="badge badge-info" show={ roomPlayer.name == this.player.displayName }>BALANCE</span>
 					</div>
 				</div>
   		</div>
@@ -25,6 +52,10 @@
 
 		this.room = null;
 		this.roomPlayers = [];
+		this.currentBoard = 'start';
+		this.countNum = "";
+		this.round = 1;
+		this.bidValue = "";
 
 		firebase.auth().onAuthStateChanged(playerObj => {
 			if (playerObj) {
@@ -72,20 +103,50 @@
 				roomPlayersRef.doc(this.player.uid).set({
 					id: this.player.uid,
 					name: this.player.displayName,
+					photo: this.player.photoURL,
+					balance: 50
 				});
 				return roomPlayersRef;
 
 			}).then(roomPlayersRef => {
-				stopListening = roomPlayersRef.onSnapshot(querySnapshot => {
+				roomPlayersRef.onSnapshot(querySnapshot => {
 					this.roomPlayers = [];
 					querySnapshot.forEach(doc => {
 						this.roomPlayers.push(doc.data());
-					});
-
+						if (this.roomPlayers.length === 3) {
+							observer.trigger('timer:start');
+						}
+ 					});
 					this.update();
 				});
-			});
+			})
 		});
+
+		// roomRef.onSnapshot(snapshot => {
+		// 	snapshot.forEach(doc => {
+		// 		console.log(doc);
+		// 	});
+		// 	// if () {
+		// 	// 	observer.trigger('timer:start')
+		// 	// }
+		// });
+
+		bid() {
+			observer.trigger('bid:start');
+		}
+
+    //a funtion to toggle between start page and round page; only for coding process; delete it after finishing the whole project
+		toggle() {
+			if(this.currentBoard == 'start') {
+				this.currentBoard = 'round';
+			} else if(this.currentBoard == 'round') {
+				this.currentBoard = 'winner';
+			} else if(this.currentBoard == 'winner') {
+				this.currentBoard = 'rank';
+			} else if(this.currentBoard == 'rank') {
+				this.currentBoard = 'start';
+			}
+		}
 
   </script>
 
@@ -96,11 +157,39 @@
 			width: 600px;
 			height: 300px;
 			background-color: #f8f9fa;
+			text-align: center;
 		}
-		.bg-info {
-			width: 30%;
-			color: white;
-			padding: 3px;
+		.clock {
+			width: 200px;
+			height: 200px;
+			background-color: #fff;
+			margin: auto;
 		}
+		#countNum {
+			font-size: 100px;
+		}
+		#bidInput {
+			width: 20%;
+			border-radius: 30px;
+		}
+		#winnerBoard {
+			padding-top: 50px;
+			font-size: 50px;
+		}
+		#winnerImg {
+			width: 60px;
+		}
+		#rankBoard {
+			text-align: center;
+			margin-top: 20px;
+		}
+		#rank {
+			font-size: 45px;
+			background-color: #4682b4;
+		}
+		#rankImg {
+			width: 30px;
+		}
+
   </style>
 </app>
