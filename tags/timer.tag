@@ -14,8 +14,9 @@
         if (this.seconds == 0) {
           clearInterval(timerID);
           //if we want to use the timer for several times, it will need the following two lines
-          // this.seconds = 5;
-          // setTimeout(()=>{ this.update() }, 3000) ===> setTimeout will run this.update() once after 3 seconds
+          this.seconds = 5;
+          //setTimeout will run this.update() once after 3 seconds
+          setTimeout(()=>{ this.update() }, 3000)
         }
       }, 1000);
     });
