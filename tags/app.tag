@@ -13,7 +13,7 @@
 						<span class="badge badge-info"><bidTimer></bidTimer></span>
 					</div>
 					<div class="table">
-						<div if={ currentBoard == 'start' && roomPlayers.length == 3 } class="clock">
+						<div if={ currentBoard == 'start' && roomPlayers.length == 4 } class="clock">
 							<timer></timer>
 						</div>
 						<div if={ currentBoard == 'round' }>
@@ -36,6 +36,7 @@
 						</div>
 					</div>
 					<div if={ currentBoard !== 'rank'} each={ roomPlayer in roomPlayers }>
+						<span if={ currentBoard == 'round'} class="badge badge-info"><i class="fas fa-hand-holding-usd"></i>{ <!-- here should be every bid that each player make --> }</span>
 						<strong>{ roomPlayer.name }</strong>:
 						<input id="bidInput" class="mr-sm-2" type="number" min="0" max="50" ref="bidInput" placeholder="Write your bid here" show={ currentBoard == 'round' && roomPlayer.name == this.player.displayName }>
 						<button class="btn btn-sm btn-success" type="button" onclick={ bid } show={ currentBoard == 'round' && roomPlayer.name == this.player.displayName }>BID</button>
@@ -113,23 +114,29 @@
 					this.roomPlayers = [];
 					querySnapshot.forEach(doc => {
 						this.roomPlayers.push(doc.data());
-						if (this.roomPlayers.length === 3) {
-							observer.trigger('timer:start');
-						}
  					});
 					this.update();
 				});
 			})
 		});
 
-		// roomRef.onSnapshot(snapshot => {
-		// 	snapshot.forEach(doc => {
-		// 		console.log(doc);
-		// 	});
-		// 	// if () {
-		// 	// 	observer.trigger('timer:start')
-		// 	// }
-		// });
+
+		//the problem here is that I need to press exit room and then enter the room again, which will then trigger the timer
+		roomsRef.onSnapshot(snapshot => {
+			snapshot.forEach(doc => {
+				let roomID = doc.id;
+				console.log(roomID);
+				let roomRef = roomsRef.doc(roomID).collection('players');
+				roomRef.onSnapshot(querySnapshot => {
+					console.log(querySnapshot.docs.length);
+					if (querySnapshot.docs.length == 4) {
+						observer.trigger('timer:start');
+					}
+				});
+			});
+		});
+
+
 
 		bid() {
 			observer.trigger('bid:start');
