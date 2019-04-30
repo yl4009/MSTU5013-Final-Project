@@ -8,9 +8,9 @@
     observer.on('timer:start', () => {
 
       let timerID = setInterval( () => {
-        this.seconds--;
-        console.log(this.seconds);
-        this.update();
+        tag.seconds--;
+        console.log(tag.seconds);
+        tag.update();
         if (this.seconds == 0) {
           clearInterval(timerID);
           //if we want to use the timer for several times, it will need the following two lines
