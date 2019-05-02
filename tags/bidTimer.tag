@@ -3,13 +3,20 @@
   <script>
     var tag = this;
     this.seconds = 15;
+    let timerID;
 
     observer.on('bid:start', () => {
 
-      let timerID = setInterval( () => {
+       clearInterval(timerID);
+       this.seconds = 15;
+
+       timerID = setInterval( () => {
         this.seconds--;
         console.log(this.seconds);
         this.update();
+        // observer.on('bidButton:pressed', => {
+        //   clearInterval(timerID);
+        // });
         if (this.seconds == 0) {
           clearInterval(timerID);
           setTimeout(()=>{

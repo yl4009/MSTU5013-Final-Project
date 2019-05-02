@@ -118,7 +118,7 @@
 					this.update();
 				});
 				let roomRef = roomsRef.doc(roomCode).collection('players');
-				roomRef.onSnapshot(querySnapshot => {
+				roomRef.get().then(querySnapshot => {
 					console.log(querySnapshot.docs.length);
 					if (querySnapshot.docs.length = 4) {
 						observer.trigger('timer:start');
@@ -134,8 +134,8 @@
 		bid() {
 			//bid start to count down
 			observer.trigger('bid:start');
-			let roomCode = this.room.id;
-			observer.trigger('bid:value', roomCode);
+			// let roomCode = this.room.id;
+			// observer.trigger('bid:value', roomCode);
 		}
 
     //a function to toggle between start page and round page; only for coding process; delete it after finishing the whole project
