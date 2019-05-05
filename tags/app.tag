@@ -144,9 +144,12 @@
 					for (let i = 0; i < 3; i++) {
 						bidInputArray.push(parseInt(this.refs.bidInput[i].value));
 					}
-					console.log(Math.max(bidInputArray));
-					roomsRef.doc('roomCode').highestBid = Math.max(bidInputArray);
-					this.update();
+					console.log(bidInputArray);
+					roomsRef.doc('roomCode').onSnapshot(querySnapshot => {
+						console.log(querySnapshot);
+						roomsRef.doc('roomCode').highestBid = Math.max(bidInputArray);
+						this.update();
+					});
 				}
 			});
 		});
