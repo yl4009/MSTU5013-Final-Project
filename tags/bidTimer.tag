@@ -14,9 +14,7 @@
         this.seconds--;
         console.log(this.seconds);
         this.update();
-        // observer.on('bidButton:pressed', => {
-        //   clearInterval(timerID);
-        // });
+        
         if (this.seconds == 0) {
           clearInterval(timerID);
           setTimeout(()=>{

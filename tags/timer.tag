@@ -8,15 +8,16 @@
     observer.on('timer:start', () => {
 
       let timerID = setInterval( () => {
-        tag.seconds--;
+        this.seconds--;
         console.log(tag.seconds);
-        tag.update();
+        this.update();
         if (this.seconds === 0) {
           clearInterval(timerID);
+          observer.trigger('current:round');
           //if we want to use the timer for several times, it will need the following two lines
           this.seconds = 5;
-          // //setTimeout will run this.update() once after 3 seconds
-          setTimeout(()=>{ this.update() }, 3000)
+          // // //setTimeout will run this.update() once after 3 seconds
+          setTimeout(()=>{ this.update() }, 2000)
         }
       }, 1000);
     });
