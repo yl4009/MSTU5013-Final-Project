@@ -9,8 +9,9 @@
 					<h1>Room: { room.id }</h1><button class="btn btn-secondary" type="button" onclick={ toggle }>TOGGLE</button>
 					<div if={ currentBoard == 'round' }>
 						<span class="badge badge-primary">ROUND: { round }</span>
-						<span class="badge badge-sm badge-warning">Target of Bidding: { targetBidValue } <i class="fas fa-coins"></i> { bidValue } </span>
+						<span class="badge badge-sm badge-warning">Target of Bidding: <i class="fas fa-coins"></i> { bidValue } </span>
 						<span class="badge badge-info"><bidTimer></bidTimer></span>
+
 					</div>
 					<div class="table">
 						<div if={ currentBoard == 'start' && roomPlayers.length == 4 } class="clock">
@@ -20,6 +21,8 @@
 							<!-- here need to grab data from database to show the highest and second highest players-->
 							<span></span>
 							<span></span>
+							<span ><pieTimer></pieTimer></span>
+
 						</div>
 						<div id="winnerBoard" if={ currentBoard == 'winner' }>
 							<i class="fas fa-crown"></i>
@@ -36,11 +39,11 @@
 						</div>
 					</div>
 					<div if={ currentBoard !== 'rank'} each={ roomPlayer in roomPlayers }>
-						<!-- <span if={ currentBoard == 'round'} class="badge badge-info"><i class="fas fa-hand-holding-usd"></i>{  here should be every bid that each player make }</span> -->
+						<span if={ currentBoard == 'round'} class="badge badge-info"><i class="fas fa-hand-holding-usd"></i>{ <!-- here should be every bid that each player make --> }</span>
 						<strong>{ roomPlayer.name }</strong>:
-						<input id="bidInput" class="mr-sm-2" type="number" min="0" ref="bidInput" placeholder="Must be integer" show={ currentBoard == 'round' && roomPlayer.name == this.player.displayName }>
+						<input id="bidInput" class="mr-sm-2" type="number" min="0" max="50" ref="bidInput" placeholder="Write your bid here" show={ currentBoard == 'round' && roomPlayer.name == this.player.displayName }>
 						<button class="btn btn-sm btn-success" type="button" onclick={ bid } show={ currentBoard == 'round' && roomPlayer.name == this.player.displayName }>BID</button>
-						<span class="badge badge-info" show={ roomPlayer.name == this.player.displayName }>BALANCE: { roomPlayer.balance }</span>
+						<span class="badge badge-info" show={ roomPlayer.name == this.player.displayName }>BALANCE</span>
 					</div>
 				</div>
   		</div>
@@ -49,7 +52,6 @@
 
   <script>
     // JAVASCRIPT
-		let tag = this;
 		let roomsRef = database.collection('player-rooms');
 
 		this.room = null;
@@ -57,6 +59,7 @@
 		this.currentBoard = 'start';
 		this.countNum = "";
 		this.round = 1;
+		this.bidValue = "";
 
 		firebase.auth().onAuthStateChanged(playerObj => {
 			if (playerObj) {
@@ -68,6 +71,10 @@
 			this.update();
 		});
 
+		// let bidsRef = database.collection('bids');
+		// this. room
+
+		let stopListening;
 
 		observer.on('exitRoom', () => {
 			let roomPlayerRef = database.collection('player-rooms').doc(this.room.id).collection('players').doc(this.player.uid);
@@ -79,7 +86,6 @@
 
 		observer.on('codeEntered', roomCode => {
 			roomsRef.doc(roomCode).get().then(doc => {
-
 				if (!doc.exists) {
 
 					let room = {
@@ -117,28 +123,32 @@
  					});
 					this.update();
 				});
-				let roomRef = roomsRef.doc(roomCode).collection('players');
+			})
+		});
+
+
+		//the problem here is that I need to press exit room and then enter the room again, which will then trigger the timer
+		roomsRef.onSnapshot(snapshot => {
+			snapshot.forEach(doc => {
+				let roomID = doc.id;
+				console.log(roomID);
+				let roomRef = roomsRef.doc(roomID).collection('players');
 				roomRef.onSnapshot(querySnapshot => {
 					console.log(querySnapshot.docs.length);
-					if (querySnapshot.docs.length = 4) {
+					if (querySnapshot.docs.length == 4) {
 						observer.trigger('timer:start');
-					};
+					}
 				});
 			});
 		});
 
-		observer.on('bid:value', roomCode => {
-			console.log(roomCode);
-		});
+
 
 		bid() {
-			//bid start to count down
 			observer.trigger('bid:start');
-			let roomCode = this.room.id;
-			observer.trigger('bid:value', roomCode);
 		}
 
-    //a function to toggle between start page and round page; only for coding process; delete it after finishing the whole project
+    //a funtion to toggle between start page and round page; only for coding process; delete it after finishing the whole project
 		toggle() {
 			if(this.currentBoard == 'start') {
 				this.currentBoard = 'round';
