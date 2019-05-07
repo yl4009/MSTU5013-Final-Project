@@ -145,8 +145,13 @@
 						bidInputArray.push(parseInt(this.refs.bidInput[i].value));
 					}
 					console.log(bidInputArray);
+					roomsRef.doc('roomCode').set({highestBid: Math.max(bidInputArray)}, {merge: true});
+				}
+
+				bid() {
+					//bidTimer starts to count down
+					observer.trigger('bid:start');
 					roomsRef.doc('roomCode').onSnapshot(querySnapshot => {
-						roomsRef.doc('roomCode').highestBid = Math.max(bidInputArray);
 						console.log(roomsRef.doc('roomCode').highestBid);
 						this.update();
 					});
@@ -164,12 +169,6 @@
 			this.update();
 		});
 
-
-
-		bid() {
-			//bidTimer starts to count down
-			observer.trigger('bid:start');
-		}
 
 		//a function to toggle between start page and round page; only for coding process; delete it after finishing the whole project
 		toggle() {
