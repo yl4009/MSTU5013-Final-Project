@@ -11,7 +11,7 @@
       , π = Math.PI
       , t = 41.67;
     var that=this;
-
+    var isbid=false
     draw() {
       α++;
       α %= 360;
@@ -28,6 +28,10 @@
 //});
       that.refs.myloader.setAttribute( 'd', anim );
       that.refs.myborder.setAttribute( 'd', anim );
+      // if (!isbid) {
+      //   α = 0
+      // }
+
       setTimeout(that.draw, t); // Redraw
     }
 
