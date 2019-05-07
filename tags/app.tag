@@ -10,9 +10,10 @@
 					<div if={ currentBoard == 'round' }>
 						<span class="badge badge-primary">ROUND: { round }</span>
 						<span class="badge badge-sm badge-warning">Target Bid: { targetBid } <i class="fas fa-coins"></i> { bidValue } </span>
-						<span id="pieTimer"><pieTimer></pieTimer></span>
+
 
 					</div>
+					<span  if={ currentBoard == 'round' } id="pieTimer"><pieTimer></pieTimer></span>
 					<div class="table">
 						<div if={ currentBoard == 'start' && roomPlayers.length == 4 } class="clock">
 							<timer></timer>
@@ -37,7 +38,7 @@
 						</div>
 					</div>
 					<div if={ currentBoard !== 'rank'} each={ roomPlayer in roomPlayers }>
-						<span if={ currentBoard == 'round'} class="badge badge-info"><i class="fas fa-hand-holding-usd"></i>{ <!-- here should be every bid that each player make --> }</span>
+					<!-- <span if={ currentBoard == 'round'} class="badge badge-info"><i class="fas fa-hand-holding-usd"></i>{  here should be every bid that each player make }</span>-->
 						<strong>{ roomPlayer.name }</strong>:
 						<input id="bidInput" class="mr-sm-2" type="number" min="0" onchange={ saveInput } ref="bidInput" placeholder="Enter integer please" show={ currentBoard == 'round' && roomPlayer.name == this.player.displayName }>
 						<button class="btn btn-sm btn-success" type="button" onclick={ bid } show={ currentBoard == 'round' && roomPlayer.name == this.player.displayName }>BID</button>
