@@ -14,7 +14,7 @@
 
 					</div>
 					<div class="table">
-						<div if={ currentBoard == 'start' && roomPlayers.length == 3 } class="clock">
+						<div if={ currentBoard == 'start' && roomPlayers.length == 4 } class="clock">
 							<timer></timer>
 						</div>
 						<div if={ currentBoard == 'round' }>
@@ -136,7 +136,7 @@
 				//when the number of players in one room reaches 4, it will trigger the timer
 				let roomRef = roomsRef.doc(roomCode).collection('players');
 				roomRef.get().then(querySnapshot => {
-					if (querySnapshot.docs.length = 3) {
+					if (querySnapshot.docs.length = 4) {
 						observer.trigger('timer:start');
 					}
 				});
@@ -144,12 +144,15 @@
 				//get bid value from player bidInput
 				saveInput() {
 					let bidInputArray = [];
-					for (let i = 0; i < 3; i++) {
+					for (let i = 0; i < 4; i++) {
 						bidInputArray.push(parseInt(this.refs.bidInput[i].value));
 					}
-					console.log(Math.max(bidInputArray));
-					roomsRef.doc('roomCode').highestBid = Math.max(bidInputArray);
-					this.update();
+					console.log(bidInputArray);
+					roomsRef.doc('roomCode').onSnapshot(querySnapshot => {
+						roomsRef.doc('roomCode').highestBid = Math.max(bidInputArray);
+						console.log(roomsRef.doc('roomCode').highestBid);
+						this.update();
+					});
 				}
 			});
 		});
