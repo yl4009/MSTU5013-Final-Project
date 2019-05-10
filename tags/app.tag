@@ -9,17 +9,19 @@
 					<h1>Room: { room.id }</h1><button class="btn btn-secondary" type="button" onclick={ toggle }>TOGGLE</button>
 					<div if={ currentBoard == 'round' }>
 						<span class="badge badge-primary">ROUND: { round }</span>
-						<span class="badge badge-sm badge-warning">Target of Bidding: { targetBidValue } <i class="fas fa-coins"></i> { bidValue } </span>
-						<span class="badge badge-info"><bidTimer></bidTimer></span>
+						<span class="badge badge-sm badge-warning">Target Bid: { targetBid } <i class="fas fa-coins"></i> { bidValue } </span>
+
+
 					</div>
+					<span  if={ currentBoard == 'round' } id="pieTimer"><pieTimer></pieTimer></span>
 					<div class="table">
 						<div if={ currentBoard == 'start' && roomPlayers.length == 4 } class="clock">
 							<timer></timer>
 						</div>
 						<div if={ currentBoard == 'round' }>
 							<!-- here need to grab data from database to show the highest and second highest players-->
-							<span></span>
-							<span></span>
+							<span>{ highestBid }</span><span>{ firstPlayer }</span>
+							<span>{ secondHighestBid }</span><span>{ secondPlayer }</span>
 						</div>
 						<div id="winnerBoard" if={ currentBoard == 'winner' }>
 							<i class="fas fa-crown"></i>
@@ -36,11 +38,11 @@
 						</div>
 					</div>
 					<div if={ currentBoard !== 'rank'} each={ roomPlayer in roomPlayers }>
-						<!-- <span if={ currentBoard == 'round'} class="badge badge-info"><i class="fas fa-hand-holding-usd"></i>{  here should be every bid that each player make }</span> -->
+					<!-- <span if={ currentBoard == 'round'} class="badge badge-info"><i class="fas fa-hand-holding-usd"></i>{  here should be every bid that each player make }</span>-->
 						<strong>{ roomPlayer.name }</strong>:
-						<input id="bidInput" class="mr-sm-2" type="number" min="0" ref="bidInput" placeholder="Must be integer" show={ currentBoard == 'round' && roomPlayer.name == this.player.displayName }>
+						<input id="bidInput" class="mr-sm-2" type="number" min="0" onchange={ saveInput } ref="bidInput" placeholder="Enter integer please" show={ currentBoard == 'round' && roomPlayer.name == this.player.displayName }>
 						<button class="btn btn-sm btn-success" type="button" onclick={ bid } show={ currentBoard == 'round' && roomPlayer.name == this.player.displayName }>BID</button>
-						<span class="badge badge-info" show={ roomPlayer.name == this.player.displayName }>BALANCE: { roomPlayer.balance }</span>
+						<span class="badge badge-info" show={ roomPlayer.name == this.player.displayName }>BALANCE</span>
 					</div>
 				</div>
   		</div>
@@ -49,7 +51,6 @@
 
   <script>
     // JAVASCRIPT
-		let tag = this;
 		let roomsRef = database.collection('player-rooms');
 
 		this.room = null;
@@ -57,6 +58,12 @@
 		this.currentBoard = 'start';
 		this.countNum = "";
 		this.round = 1;
+		this.targetBid = "";
+		this.highestBid = null;
+		this.secondHighestBid = null;
+		this.firstPlayer = null;
+		this.secondPlayer = null;
+
 
 		firebase.auth().onAuthStateChanged(playerObj => {
 			if (playerObj) {
@@ -68,6 +75,10 @@
 			this.update();
 		});
 
+		// let bidsRef = database.collection('bids');
+		// this. room
+
+		let stopListening;
 
 		observer.on('exitRoom', () => {
 			let roomPlayerRef = database.collection('player-rooms').doc(this.room.id).collection('players').doc(this.player.uid);
@@ -79,13 +90,18 @@
 
 		observer.on('codeEntered', roomCode => {
 			roomsRef.doc(roomCode).get().then(doc => {
-
 				if (!doc.exists) {
 
 					let room = {
 						author: this.player.displayName,
 						authorID: this.player.uid,
-						id: doc.id
+						id: doc.id,
+						round: this.round,
+						targetBid: this.targetBid,
+						highestBid: this.highestBid,
+						firstPlayer: this.firstPlayer,
+						secondHighestBid: this.secondHighestBid,
+						secondPlayer: this.secondPlayer
 					}
 
 					doc.ref.set(room);
@@ -117,28 +133,48 @@
  					});
 					this.update();
 				});
+
+				//when the number of players in one room reaches 4, it will trigger the timer
 				let roomRef = roomsRef.doc(roomCode).collection('players');
-				roomRef.onSnapshot(querySnapshot => {
-					console.log(querySnapshot.docs.length);
+				roomRef.get().then(querySnapshot => {
 					if (querySnapshot.docs.length = 4) {
 						observer.trigger('timer:start');
-					};
+					}
 				});
+
+				//get bid value from player bidInput
+				saveInput() {
+					let bidInputArray = [];
+					for (let i = 0; i < 4; i++) {
+						bidInputArray.push(parseInt(this.refs.bidInput[i].value));
+					}
+					console.log(bidInputArray);
+					roomsRef.doc('roomCode').set({highestBid: Math.max(bidInputArray)}, {merge: true});
+				}
+
+				bid() {
+					//bidTimer starts to count down
+					observer.trigger('bid:start');
+					roomsRef.doc('roomCode').onSnapshot(querySnapshot => {
+						console.log(roomsRef.doc('roomCode').highestBid);
+						this.update();
+					});
+				}
 			});
 		});
 
-		observer.on('bid:value', roomCode => {
-			console.log(roomCode);
+		observer.on('current:round', () => {
+			this.currentBoard = 'round';
+			getTargetBid () {
+				//how to get random number from 100-150? Now it is only 100 or 101 or 102
+				this.targetBid = Math.floor((Math.random() + 50) * 2);
+			};
+			this.getTargetBid();
+			this.update();
 		});
 
-		bid() {
-			//bid start to count down
-			observer.trigger('bid:start');
-			let roomCode = this.room.id;
-			observer.trigger('bid:value', roomCode);
-		}
 
-    //a function to toggle between start page and round page; only for coding process; delete it after finishing the whole project
+		//a function to toggle between start page and round page; only for coding process; delete it after finishing the whole project
 		toggle() {
 			if(this.currentBoard == 'start') {
 				this.currentBoard = 'round';
@@ -192,6 +228,11 @@
 		}
 		#rankImg {
 			width: 30px;
+
+		}
+
+		#pieTimer {
+			width: 10px;
 		}
 
   </style>

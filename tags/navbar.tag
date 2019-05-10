@@ -33,7 +33,9 @@
 		}
 
 		enterRoomCode(event) {
-			if (event.code === "Enter") {
+
+			if (event.keyCode === 13) {
+
 				let roomCode = event.target.value;
 				observer.trigger('codeEntered', roomCode);
 			}
