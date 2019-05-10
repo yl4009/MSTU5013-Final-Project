@@ -6,13 +6,11 @@
   </svg>
 
   <script>
-    var tag = this;
     var α = 0
       , π = Math.PI
       , t = 41.67;
-    var that=this;
-    var isbid=false
-    console.log(this.parent.round)
+    var that = this;
+    var isbid = false
     draw() {
       α++;
       // α %= 360;
