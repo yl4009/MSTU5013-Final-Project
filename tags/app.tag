@@ -232,9 +232,7 @@
 
 		}
 
-		#pieTimer {
-			width: 10px;
-		}
+
 
   </style>
 </app>

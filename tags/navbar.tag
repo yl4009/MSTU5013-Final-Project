@@ -10,7 +10,7 @@
 	    <ul class="navbar-nav mr-auto">
 	    </ul>
 	    <div class="form-inline my-2 my-lg-0">
-				<span if={ player } class="navbar-text mr-3"><img src={ player.photoURL }></span>
+				<span if={ player } class="navbar-text mr-3"><img src={ player.photoURL } id ="personImage" ></span>
 				<span if={ player } class="navbar-text mr-3">{ player.displayName }</span>
 				<input if={ player && !room } class="form-control mr-sm-2" ref="roomCode" placeholder="Room Code" onkeypress={ enterRoomCode }>
 				<button show={ room } class="btn btn-outline-warning my-2 my-sm-0 mr-sm-2" type="button" onclick={ exitRoom }>Exit Room</button>
@@ -19,6 +19,9 @@
 	    </div>
 	  </div>
 	</nav>
+	<div>
+		<img src="https://newsfeed.org/wp-content/uploads/Facebook-enhanced-bidding.jpg" alt="Auction" width="500" height="600">
+	</div>
 
   <script>
 		login() {
@@ -50,8 +53,8 @@
   <style>
     /* CSS */
     :scope {}
-		img {
-			width: 30px;
+		#personImage {
+     width: 30px
 		}
   </style>
 </navbar>

@@ -1,6 +1,6 @@
 <pieTimer>
   <!--  html part-->
-  <svg width="250" height="250" viewbox="0 0 250 250">
+  <svg width="60" height="60" viewbox="0 0 300 300">
     <path id="border" ref="myborder" transform="translate(125, 125)"/>
     <path id="loader" ref="myloader" transform="translate(125, 125) scale(.84)"/>
   </svg>
@@ -12,9 +12,10 @@
       , t = 41.67;
     var that=this;
     var isbid=false
+    console.log(this.parent.round)
     draw() {
       α++;
-      α %= 360;
+      // α %= 360;
       var r = ( α * π / 180 )
       , x = Math.sin( r ) * 125
       , y = Math.cos( r ) * - 125
@@ -31,8 +32,15 @@
       // if (!isbid) {
       //   α = 0
       // }
+      if (α>=360) {
+        that.parent.round=that.parent.round + 1
+        console.log(that.parent)
+        that.parent.toggle()
+        that.parent.update()
 
-      setTimeout(that.draw, t); // Redraw
+      } else {
+        setTimeout(that.draw, t); // Redraw
+      }
     }
 
     setTimeout(this.draw,t)
