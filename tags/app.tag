@@ -59,9 +59,6 @@
 		this.round = 1;
 		this.targetBid = "";
 		this.bids = [];
-		this.secondHighestBid = null;
-		this.firstPlayer = null;
-		this.secondPlayer = null;
 
 
 		firebase.auth().onAuthStateChanged(playerObj => {
@@ -94,10 +91,7 @@
 						id: doc.id,
 						round: this.round,
 						targetBid: this.targetBid,
-						bids: this.bids,
-						// firstPlayer: this.firstPlayer,
-						// secondHighestBid: this.secondHighestBid,
-						// secondPlayer: this.secondPlayer
+						bids: this.bids
 					}
 
 					doc.ref.set(room);
@@ -149,7 +143,7 @@
 					let bidder = event.item.roomPlayer.name;
 					let bidsRef = roomsRef.doc(roomCode);
 					bidsRef.update({
-						highestBid: firebase.firestore.FieldValue.arrayUnion({name: bidder, bidValue: bidValue})
+						bids: firebase.firestore.FieldValue.arrayUnion({name: bidder, bidValue: bidValue})
 					});
 				}
 			});
