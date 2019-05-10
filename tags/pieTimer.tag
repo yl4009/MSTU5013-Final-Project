@@ -1,17 +1,16 @@
 <pieTimer>
   <!--  html part-->
-  <svg width="250" height="250" viewbox="0 0 250 250">
+  <svg width="60" height="60" viewbox="0 0 250 250">
     <path id="border" ref="myborder" transform="translate(125, 125)"/>
     <path id="loader" ref="myloader" transform="translate(125, 125) scale(.84)"/>
   </svg>
 
   <script>
-    var tag = this;
     var α = 0
       , π = Math.PI
       , t = 41.67;
-    var that=this;
-    var isbid=false
+    var that = this;
+    var isbid = false
     draw() {
       α++;
       α %= 360;

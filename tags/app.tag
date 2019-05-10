@@ -9,11 +9,10 @@
 					<h1>Room: { room.id }</h1><button class="btn btn-secondary" type="button" onclick={ toggle }>TOGGLE</button>
 					<div if={ currentBoard == 'round' }>
 						<span class="badge badge-primary">ROUND: { round }</span>
-						<span class="badge badge-sm badge-warning">Target Bid: { targetBid } <i class="fas fa-coins"></i> { bidValue } </span>
-
-
+						<span class="badge badge-sm badge-warning">Target Bid: { targetBid } <i class="fas fa-coins"></i></span>
+						<span  if={ currentBoard == 'round' } id="pieTimer"><pieTimer></pieTimer></span>
 					</div>
-					<span  if={ currentBoard == 'round' } id="pieTimer"><pieTimer></pieTimer></span>
+
 					<div class="table">
 						<div if={ currentBoard == 'start' && roomPlayers.length == 4 } class="clock">
 							<timer></timer>
@@ -30,7 +29,7 @@
 						</div>
 						<div id="rankBoard" if={ currentBoard == 'rank' }>
 							<p id="rank">Rank</p>
-							<div each={ roomPlayer in roomPlayers}>
+							<div each={ roomPlayer in roomPlayers }>
 								<img id="rankImg" src={ roomPlayer.photo }>
 								<span><strong>{ roomPlayer.name }</strong></span>
 								<span class="badge badge-info">{ roomPlayer.balance }</span>
@@ -59,7 +58,7 @@
 		this.countNum = "";
 		this.round = 1;
 		this.targetBid = "";
-		this.highestBid = null;
+		this.bids = [];
 		this.secondHighestBid = null;
 		this.firstPlayer = null;
 		this.secondPlayer = null;
@@ -74,9 +73,6 @@
 			}
 			this.update();
 		});
-
-		// let bidsRef = database.collection('bids');
-		// this. room
 
 		let stopListening;
 
@@ -98,10 +94,10 @@
 						id: doc.id,
 						round: this.round,
 						targetBid: this.targetBid,
-						highestBid: this.highestBid,
-						firstPlayer: this.firstPlayer,
-						secondHighestBid: this.secondHighestBid,
-						secondPlayer: this.secondPlayer
+						bids: this.bids,
+						// firstPlayer: this.firstPlayer,
+						// secondHighestBid: this.secondHighestBid,
+						// secondPlayer: this.secondPlayer
 					}
 
 					doc.ref.set(room);
@@ -142,22 +138,18 @@
 					}
 				});
 
-				//get bid value from player bidInput
-				saveInput() {
-					let bidInputArray = [];
-					for (let i = 0; i < 4; i++) {
-						bidInputArray.push(parseInt(this.refs.bidInput[i].value));
-					}
-					console.log(bidInputArray);
-					roomsRef.doc('roomCode').set({highestBid: Math.max(bidInputArray)}, {merge: true});
+        let bidValue;
+				saveInput(event) {
+					bidValue = event.target.value;
 				}
 
-				bid() {
+				bid(event) {
 					//bidTimer starts to count down
 					observer.trigger('bid:start');
-					roomsRef.doc('roomCode').onSnapshot(querySnapshot => {
-						console.log(roomsRef.doc('roomCode').highestBid);
-						this.update();
+					let bidder = event.item.roomPlayer.name;
+					let bidsRef = roomsRef.doc(roomCode);
+					bidsRef.update({
+						highestBid: firebase.firestore.FieldValue.arrayUnion({name: bidder, bidValue: bidValue})
 					});
 				}
 			});
@@ -229,10 +221,6 @@
 		#rankImg {
 			width: 30px;
 
-		}
-
-		#pieTimer {
-			width: 10px;
 		}
 
   </style>
