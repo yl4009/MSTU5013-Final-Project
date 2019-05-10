@@ -6,19 +6,20 @@
   		<div class="col">
 
 				<div if={ room }>
-					<h1>Room: { room.id }</h1><button class="btn btn-secondary" type="button" onclick={ toggle }>TOGGLE</button>
+					<h1>Room:{ room.id }</h1><button class="btn btn-secondary" type="button" onclick={ toggle }>TOGGLE</button>
 					<div if={ currentBoard == 'round' }>
-						<span class="badge badge-primary">ROUND: { round }</span>
-						<span class="badge badge-sm badge-warning">Target Bid: { targetBid } <i class="fas fa-coins"></i></span>
+						<span style='font-size: 18pt;'class="badge badge-primary">ROUND: { round }</span>
+						<span style='font-size: 18pt;'class="badge badge-sm badge-warning">Target Bid: { targetBid } <i class="fas fa-coins"></i></span>
 						<span  if={ currentBoard == 'round' } id="pieTimer"><pieTimer></pieTimer></span>
 					</div>
 
 					<div class="table">
-						<div if={ currentBoard == 'start' && roomPlayers.length == 4 } class="clock">
+						<div id="countDownBoard" if={ currentBoard == 'start' && roomPlayers.length == 3 } class="clock">
 							<timer></timer>
 						</div>
-						<div if={ currentBoard == 'round' }>
+						<div id="playBoard"if={ currentBoard == 'round' }>
 							<!-- here need to grab data from database to show the highest and second highest players-->
+
 							<span>{ highestBid }</span><span>{ firstPlayer }</span>
 							<span>{ secondHighestBid }</span><span>{ secondPlayer }</span>
 						</div>
@@ -127,7 +128,7 @@
 				//when the number of players in one room reaches 4, it will trigger the timer
 				let roomRef = roomsRef.doc(roomCode).collection('players');
 				roomRef.get().then(querySnapshot => {
-					if (querySnapshot.docs.length = 4) {
+					if (querySnapshot.docs.length = 3) {
 						observer.trigger('timer:start');
 					}
 				});
@@ -198,8 +199,23 @@
 			border-radius: 30px;
 		}
 		#winnerBoard {
+			background-image: url('asset/falling chip2.jpg');
+			height:300px;
+			width:600px;
 			padding-top: 50px;
 			font-size: 50px;
+		}
+		#playBoard {
+			background-image: url('asset/chip1.jpg');
+			height:300px;
+			width:600px;
+			padding-top: 50px;
+		}
+		#countDownBoard {
+			background-image: url('asset/ready.jpg');
+			height:300px;
+			width:600px;
+			padding-top: 50px;
 		}
 		#winnerImg {
 			width: 60px;
@@ -207,6 +223,9 @@
 		#rankBoard {
 			text-align: center;
 			margin-top: 20px;
+			background-image: url('asset/rank2.png');
+			height:300px;
+			width:600px;
 		}
 		#rank {
 			font-size: 45px;
