@@ -13,7 +13,7 @@
     var isbid = false
     draw() {
       α++;
-      α %= 360;
+      // α %= 360;
       var r = ( α * π / 180 )
       , x = Math.sin( r ) * 125
       , y = Math.cos( r ) * - 125
@@ -30,8 +30,15 @@
       // if (!isbid) {
       //   α = 0
       // }
+      if (α>=360) {
+        that.parent.round=that.parent.round + 1
+        console.log(that.parent)
+        that.parent.toggle()
+        that.parent.update()
 
-      setTimeout(that.draw, t); // Redraw
+      } else {
+        setTimeout(that.draw, t); // Redraw
+      }
     }
 
     setTimeout(this.draw,t)
