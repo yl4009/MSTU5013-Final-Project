@@ -19,8 +19,8 @@
 						</div>
 						<div if={ currentBoard == 'round' }>
 							<!-- here need to grab data from database to show the highest and second highest players-->
-							<span>{ highestBid }</span><span>{ firstPlayer }</span>
-							<span>{ secondHighestBid }</span><span>{ secondPlayer }</span>
+							<span>{ highestBidder }</span><span>{ highestBid }</span>
+							<span>{ secondHighestBidder }</span><span>{ secondHighestBid }</span>
 						</div>
 						<div id="winnerBoard" if={ currentBoard == 'winner' }>
 							<i class="fas fa-crown"></i>
@@ -39,7 +39,7 @@
 					<div if={ currentBoard !== 'rank'} each={ roomPlayer in roomPlayers }>
 					<!-- <span if={ currentBoard == 'round'} class="badge badge-info"><i class="fas fa-hand-holding-usd"></i>{  here should be every bid that each player make }</span>-->
 						<strong>{ roomPlayer.name }</strong>:
-						<input id="bidInput" class="mr-sm-2" type="number" min="0" onchange={ saveInput } ref="bidInput" placeholder="Enter integer please" show={ currentBoard == 'round' && roomPlayer.name == this.player.displayName }>
+						<input id="bidInput" class="mr-sm-2" type="number" onchange={ saveInput } ref="bidInput" placeholder="Enter integer please" show={ currentBoard == 'round' && roomPlayer.name == this.player.displayName }>
 						<button class="btn btn-sm btn-success" type="button" onclick={ bid } show={ currentBoard == 'round' && roomPlayer.name == this.player.displayName }>BID</button>
 						<span class="badge badge-info" show={ roomPlayer.name == this.player.displayName }>BALANCE</span>
 					</div>
@@ -132,20 +132,42 @@
 					}
 				});
 
+
         let bidValue;
 				saveInput(event) {
-					bidValue = event.target.value;
+					bidValue = parseInt(event.target.value);
+					if(bidValue < this.highestBid) {
+						alert("You should bid higher");
+					}
 				}
 
 				bid(event) {
 					//bidTimer starts to count down
 					observer.trigger('bid:start');
+
+					//grab data from the players' input
 					let bidder = event.item.roomPlayer.name;
 					let bidsRef = roomsRef.doc(roomCode);
+
+					//every time a user makes a bid value, it will be saved to the field 'bids' in database
 					bidsRef.update({
 						bids: firebase.firestore.FieldValue.arrayUnion({name: bidder, bidValue: bidValue})
 					});
 				}
+
+
+				roomsRef.doc(roomCode).onSnapshot(queryDocumentSnapshot => {
+					//get bids array data from database
+					let bidsArr = queryDocumentSnapshot.data().bids;
+					//order data from database(reference to the lodash documentation: https://lodash.com/docs/4.17.11#orderBy
+					let highestBidObjects = _.orderBy(bidsArr, ['bidValue'], ['desc']);
+					console.log(highestBidObjects);
+					this.highestBid = parseInt(highestBidObjects[0].bidValue);
+					this.highestBidder = highestBidObjects[0].name;
+					this.secondHighestBid = parseInt(highestBidObjects[1].bidValue);
+					this.secondHighestBidder = highestBidObjects[1].name;
+					this.update();
+				});
 			});
 		});
 
@@ -153,7 +175,7 @@
 			this.currentBoard = 'round';
 			getTargetBid () {
 				//how to get random number from 100-150? Now it is only 100 or 101 or 102
-				this.targetBid = Math.floor((Math.random() + 50) * 2);
+				this.targetBid = Math.floor((Math.random() + 10) * 10);
 			};
 			this.getTargetBid();
 			this.update();
