@@ -26,22 +26,28 @@
 //  d = Math.round( d * 1e3 ) / 1e3;
 //});
       that.refs.myloader.setAttribute( 'd', anim );
-      that.refs.myborder.setAttribute( 'd', anim );
+      // that.refs.myborder.setAttribute( 'd', anim );
       // if (!isbid) {
       //   α = 0
       // }
-      if (α>=360) {
-        that.parent.round=that.parent.round + 1
-        console.log(that.parent)
-        that.parent.toggle()
-        that.parent.update()
+      if (α >= 360) {
+        that.parent.round = that.parent.round + 1;
+        console.log(that.parent);
+        that.parent.currentBoard = 'winner';
+        setTimeout(() => {
+          if(that.parent.currentBoard == 'winner') {
+            console.log(that.parent.currentBoard)
+            that.parent.currentBoard = 'round';
+          }
+        }, 3000);
+        that.parent.update();
 
       } else {
         setTimeout(that.draw, t); // Redraw
       }
     }
 
-    setTimeout(this.draw,t)
+    setTimeout(this.draw,t);
 
   </script>
   <style>
