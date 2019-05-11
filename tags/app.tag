@@ -13,7 +13,7 @@
 						<span  if={ currentBoard == 'round' } id="pieTimer"><pieTimer></pieTimer></span>
 					</div>
 
-					<div class="table">
+					<div class="table" hide={ currentBoard== "last"}>
 						<div id="countDownBoard" if={ currentBoard == 'start' && roomPlayers.length == 3 } class="clock">
 							<timer></timer>
 						</div>
@@ -37,13 +37,39 @@
 							</div>
 						</div>
 					</div>
-					<div if={ currentBoard !== 'rank'} each={ roomPlayer in roomPlayers }>
+					<div if={ currentBoard !== 'rank'} hide={ currentBoard== "last"} each={ roomPlayer in roomPlayers }>
 					<!-- <span if={ currentBoard == 'round'} class="badge badge-info"><i class="fas fa-hand-holding-usd"></i>{  here should be every bid that each player make }</span>-->
 						<strong>{ roomPlayer.name }</strong>:
 						<input id="bidInput" class="mr-sm-2" type="number" min="0" onchange={ saveInput } ref="bidInput" placeholder="Enter integer please" show={ currentBoard == 'round' && roomPlayer.name == this.player.displayName }>
 						<button class="btn btn-sm btn-success" type="button" onclick={ bid } show={ currentBoard == 'round' && roomPlayer.name == this.player.displayName }>BID</button>
 						<span class="badge badge-info" show={ roomPlayer.name == this.player.displayName }>BALANCE</span>
 					</div>
+					<div if={ currentBoard == 'last' } id="carouselExampleIndicators" class="carousel slide" data-ride="carousel">
+            <ol class="carousel-indicators">
+              <li data-target="#carouselExampleIndicators" data-slide-to="0" class="active"></li>
+              <li data-target="#carouselExampleIndicators" data-slide-to="1"></li>
+              <li data-target="#carouselExampleIndicators" data-slide-to="2"></li>
+            </ol>
+            <div class="carousel-inner">
+             <div class="carousel-item active">
+              <img class="d-block w-100" src="asset/Presentation1.jpg" alt="First slide">
+             </div>
+             <div class="carousel-item">
+              <img class="d-block w-100" src="asset/Presentation2.jpg" alt="Second slide">
+             </div>
+             <div class="carousel-item">
+               <img class="d-block w-100" src="asset/Presentation3.jpg" alt="Third slide">
+             </div>
+            </div>
+            <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">
+             <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+             <span class="sr-only">Previous</span>
+            </a>
+            <a class="carousel-control-next" href="#carouselExampleIndicators" role="button" data-slide="next">
+              <span class="carousel-control-next-icon" aria-hidden="true"></span>
+              <span class="sr-only">Next</span>
+            </a>
+          </div>
 				</div>
   		</div>
   	</div>
@@ -170,6 +196,8 @@
 			} else if(this.currentBoard == 'winner') {
 				this.currentBoard = 'rank';
 			} else if(this.currentBoard == 'rank') {
+				this.currentBoard = 'last';
+			} else if (this.currentBoard == 'last'){
 				this.currentBoard = 'start';
 			}
 		}
@@ -199,7 +227,7 @@
 			border-radius: 30px;
 		}
 		#winnerBoard {
-			background-image: url('asset/falling chip2.jpg');
+			background-image: url('asset/falling coin.gif');
 			height:300px;
 			width:600px;
 			padding-top: 50px;
@@ -223,7 +251,7 @@
 		#rankBoard {
 			text-align: center;
 			margin-top: 20px;
-			background-image: url('asset/rank2.png');
+			background-image: url('asset/rank.gif');
 			height:300px;
 			width:600px;
 		}
