@@ -1,6 +1,6 @@
 <pieTimer>
   <!--  html part-->
-  <svg width="60" height="60" viewbox="0 0 250 250">
+  <svg width="60" height="60" viewbox="0 0 360 360">
     <path id="border" ref="myborder" transform="translate(125, 125)"/>
     <path id="loader" ref="myloader" transform="translate(125, 125) scale(.84)"/>
   </svg>
@@ -41,7 +41,6 @@
   /* CSS part */
    svg {
      display: block;
-     margin: 50px auto;
     }
 
     #loader
