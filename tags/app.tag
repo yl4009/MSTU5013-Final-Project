@@ -1,11 +1,11 @@
 <app>
 	<navbar player={ player } room={ room }></navbar>
 
-	<div class="container">
+	<div class="container" >
 		<div class="row">
 			<div class="col">
-				<div if={ room }>
-					<h1>Room:{ room.id }</h1>
+				<div id="board" if={ room }>
+					<h2>Room:{ room.id }</h2>
 					<button class="btn btn-secondary" type="button" onclick={ toggle }>TOGGLE</button>
 					<div if={ currentBoard == 'round' }>
 						<span style='font-size: 18pt;' class="badge badge-primary">ROUND: { round }</span>
@@ -24,8 +24,8 @@
 						<div id="playBoard" if={ currentBoard == 'round' }>
 							<!-- here need to grab data from database to show the highest and second highest players-->
 
-							<span>{ highestBid }</span><span>{ firstPlayer }</span>
-							<span>{ secondHighestBid }</span><span>{ secondPlayer }</span>
+							<span id="highest">{ highestBid }</span><span>{ firstPlayer }</span>
+							<span id="secondHighest">{ secondHighestBid }</span><span>{ secondPlayer }</span>
 						</div>
 						<div id="winnerBoard" if={ currentBoard == 'winner' }>
 							<i class="fas fa-crown"></i>
@@ -279,16 +279,18 @@
 			font-size: 50px;
 		}
 		#playBoard {
-			background-image: url("assets/chip1.jpg");
+			background-image: url("assets/auction.jpg");
 			height: 300px;
 			width: 600px;
-			padding-top: 50px;
+			/* padding-top: 50px; */
+			margin-top: 20px;
 		}
 		#countDownBoard {
 			background-image: url("assets/ready.jpg");
 			height: 300px;
 			width: 600px;
-			padding-top: 50px;
+			/* padding-top: 50px; */
+			margin-top: 20px;
 		}
 		#winnerImg {
 			width: 60px;
@@ -306,6 +308,19 @@
 		}
 		#rankImg {
 			width: 30px;
+		}
+		#board {
+			font-family: 'Gugi', cursive;
+		}
+		#highest {
+			font-family:'Gugi', cursive;
+			font-size: 96px;
+			color:	#FFA07A;
+		}
+		#secondHighest {
+			font-family:'Gugi', cursive;
+			font-size: 55px;
+			color:#8FBC8F;
 		}
 	</style>
 </app>
