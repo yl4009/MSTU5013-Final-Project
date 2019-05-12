@@ -63,7 +63,7 @@
   <style>
   /* CSS part */
    svg {
-     display: block;
+     display: block;;
     }
 
     #loader

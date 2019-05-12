@@ -28,6 +28,7 @@
     }
     #timer {
       font-size: 100px;
+
     }
   </style>
 </timer>
