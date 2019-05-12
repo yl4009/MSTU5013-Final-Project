@@ -7,12 +7,12 @@
 				<div id="board" if={ room }>
 					<h2>Room:{ room.id }</h2>
 					<button class="btn btn-secondary" type="button" onclick={ toggle }>TOGGLE</button>
-					<div if={ currentBoard == 'round' }>
-						<span style='font-size: 18pt;' class="badge badge-primary">ROUND: { round }</span>
-						<span style='font-size: 18pt;' class="badge badge-sm badge-warning">Target Bid: { targetBid }
+					<div if={ currentBoard == 'round' } class="row align-items-center ">
+						<span style='font-size: 16pt;' class="col-3 badge badge-primary">ROUND: { round }</span>
+						<span style='font-size: 16pt;' class="col-3 badge badge-warning">Target Bid: { targetBid }
 							<i class="fas fa-coins"></i>
 						</span>
-						<span if={ currentBoard == 'round' } id="pieTimer">
+						<span if={ currentBoard == 'round' } class = "col-3" id="pieTimer">
 							<pietimer></pietimer>
 						</span>
 					</div>
@@ -258,12 +258,16 @@
 			background-color: #f8f9fa;
 			text-align: center;
 		}
+		.badge {
+			text-align: center;
+		}
 		.clock {
 			width: 200px;
 			height: 200px;
 			background-color: #fff;
 			margin: auto;
 		}
+		.
 		#countNum {
 			font-size: 100px;
 		}
