@@ -34,10 +34,8 @@
           this.parent.currentBoard = 'round';
         }, 3000);
         this.parent.update();
-      }
-    }
-
-  </script>
+  }
+    }</script>
   <style>
     :scope {
       display: block;
