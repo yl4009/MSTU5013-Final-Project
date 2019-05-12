@@ -51,13 +51,13 @@
             </ol>
             <div class="carousel-inner">
              <div class="carousel-item active">
-              <img class="d-block w-100" src="asset/Presentation1.jpg" alt="First slide">
+              <img class="d-block w-100" src="assets/Presentation1.jpg" alt="First slide">
              </div>
              <div class="carousel-item">
-              <img class="d-block w-100" src="asset/Presentation2.jpg" alt="Second slide">
+              <img class="d-block w-100" src="assets/Presentation2.jpg" alt="Second slide">
              </div>
              <div class="carousel-item">
-               <img class="d-block w-100" src="asset/Presentation3.jpg" alt="Third slide">
+               <img class="d-block w-100" src="assets/Presentation3.jpg" alt="Third slide">
              </div>
             </div>
             <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">
@@ -280,20 +280,20 @@
 			border-radius: 30px;
 		}
 		#winnerBoard {
-			background-image: url('asset/falling coin.gif');
+			background-image: url('assets/falling coin.gif');
 			height:300px;
 			width:600px;
 			padding-top: 50px;
 			font-size: 50px;
 		}
 		#playBoard {
-			background-image: url('asset/chip1.jpg');
+			background-image: url('assets/chip1.jpg');
 			height:300px;
 			width:600px;
 			padding-top: 50px;
 		}
 		#countDownBoard {
-			background-image: url('asset/ready.jpg');
+			background-image: url('assets/ready.jpg');
 			height:300px;
 			width:600px;
 			padding-top: 50px;
@@ -304,7 +304,7 @@
 		#rankBoard {
 			text-align: center;
 			margin-top: 20px;
-			background-image: url('asset/rank.gif');
+			background-image: url('assets/rank.gif');
 			height:300px;
 			width:600px;
 		}
