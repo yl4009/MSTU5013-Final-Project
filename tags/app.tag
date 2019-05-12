@@ -1,7 +1,7 @@
 <app>
 	<navbar player={ player } room={ room }></navbar>
 
-	<div class="container" >
+	<div class="container">
 		<div class="row">
 			<div class="col">
 				<div id="board" if={ room }>
@@ -12,7 +12,7 @@
 						<span style='font-size: 16pt;' class="col-3 badge badge-warning">Target Bid: { targetBid }
 							<i class="fas fa-coins"></i>
 						</span>
-						<span if={ currentBoard == 'round' } class = "col-3" id="pieTimer">
+						<span if={ currentBoard == 'round' } class="col-3" id="pieTimer">
 							<pietimer></pietimer>
 						</span>
 					</div>
@@ -24,8 +24,8 @@
 						<div id="playBoard" if={ currentBoard == 'round' }>
 							<!-- here need to grab data from database to show the highest and second highest players-->
 
-							<span id="highest">{ highestBid }</span><span>{ firstPlayer }</span>
-							<span id="secondHighest">{ secondHighestBid }</span><span>{ secondPlayer }</span>
+							<div id="highest" hide={ this.highestBid == 0}>{ highestBidder }:{ highestBid }</div>
+							<div id="secondHighest" hide={ this.secondHighestBid == 0}>{ secondHighestBidder }:{ secondHighestBid }</div>
 						</div>
 						<div id="winnerBoard" if={ currentBoard == 'winner' }>
 							<i class="fas fa-crown"></i>
@@ -210,7 +210,7 @@
 		});
 
 		recalculateScores() {
-			let roomref = database.collection('player-rooms').doc(this.room.id)
+			let roomref = database.collection('player-rooms').doc(this.room.id);
 			let roomPlayerRef = roomref.collection('players').doc(this.player.uid);
 			roomPlayerRef.get().then(querySnapshot => {
 				console.log(querySnapshot)
@@ -267,8 +267,7 @@
 			background-color: #fff;
 			margin: auto;
 		}
-		.
-		#countNum {
+		. #countNum {
 			font-size: 100px;
 		}
 		#bidInput {
@@ -317,14 +316,14 @@
 			font-family: 'Gugi', cursive;
 		}
 		#highest {
-			font-family:'Gugi', cursive;
-			font-size: 96px;
-			color:	#FFA07A;
+			font-family: 'Gugi', cursive;
+			font-size: 60px;
+			color: #FFA07A;
 		}
 		#secondHighest {
-			font-family:'Gugi', cursive;
-			font-size: 55px;
-			color:#8FBC8F;
+			font-family: 'Gugi', cursive;
+			font-size: 45px;
+			color: #8FBC8F;
 		}
 	</style>
 </app>
