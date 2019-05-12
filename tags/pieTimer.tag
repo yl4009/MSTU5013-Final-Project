@@ -10,8 +10,10 @@
       , π = Math.PI
       , t = 41.67;
     var that = this;
-    var isbid = false
+    let timeId;
+
     draw() {
+
       α++;
       // α %= 360;
       var r = ( α * π / 180 )
@@ -26,34 +28,42 @@
 //  d = Math.round( d * 1e3 ) / 1e3;
 //});
       that.refs.myloader.setAttribute( 'd', anim );
-      // that.refs.myborder.setAttribute( 'd', anim );
-      // if (!isbid) {
-      //   α = 0
-      // }
-      if (α >= 360) {
-        that.parent.round = that.parent.round + 1;
-        console.log(that.parent);
-        that.parent.currentBoard = 'winner';
-        setTimeout(() => {
-          if(that.parent.currentBoard == 'winner') {
-            console.log(that.parent.currentBoard)
-            that.parent.currentBoard = 'round';
-          }
-        }, 3000);
-        that.parent.update();
+      that.refs.myborder.setAttribute( 'd', anim );
 
-      } else {
-        setTimeout(that.draw, t); // Redraw
+      if (α>=360) {
+        that.parent.round=that.parent.round + 1;
+        clearInterval(timeId);
+        that.parent.recalculateScores();
+        that.parent.currentBoard = 'winner';
+        that.parent.update();
+        if(that.parent.round<=3) {
+          setTimeout(()=>{
+            that.parent.currentBoard = 'round';
+            that.parent.update();
+          },5000)
+        } else {
+          setTimeout(()=>{
+            that.parent.currentBoard = 'rank';
+            that.parent.update();
+          },5000)
+        }
       }
     }
 
-    setTimeout(this.draw,t);
+    observer.on('bid:start', () => {
+      α = 0;
+      clearInterval(timeId);
+      timeId=setInterval(this.draw, t);
+      this.parent.update();
+    })
 
+    timeId=setInterval(this.draw, t)
+    console.log(timeId)
   </script>
   <style>
   /* CSS part */
    svg {
-     display: block;
+     display: block;;
     }
 
     #loader
