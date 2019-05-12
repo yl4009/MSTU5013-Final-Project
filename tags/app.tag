@@ -7,10 +7,13 @@
 
 				<div if={ room }>
 					<h1>Room: { room.id }</h1><button class="btn btn-secondary" type="button" onclick={ toggle }>TOGGLE</button>
-					<div if={ currentBoard == 'round' }>
-						<span class="badge badge-primary">ROUND: { round }</span>
+					<div if={ currentBoard == 'round' } class="row">
+						<div class="col-2 badge badge-primary">ROUND: { round }</div>
+            <div class="col-2 badge badge-sm badge-warning">Target Bid: { targetBid } <i class="fas fa-coins"></i></div>
+            <div class="col-2" if={ currentBoard == 'round' } id="pieTimer"><pieTimer></pieTimer></div>
+						<!-- <span class="badge badge-primary">ROUND: { round }</span>
 						<span class="badge badge-sm badge-warning">Target Bid: { targetBid } <i class="fas fa-coins"></i></span>
-						<span  if={ currentBoard == 'round' } id="pieTimer"><pieTimer></pieTimer></span>
+						<span  if={ currentBoard == 'round' } id="pieTimer"><pieTimer></pieTimer></span> -->
 					</div>
 
 					<div class="table">
@@ -41,7 +44,7 @@
 						<strong>{ roomPlayer.name }</strong>:
 						<input id="bidInput" class="mr-sm-2" type="number" onchange={ saveInput } ref="bidInput" placeholder="Enter integer please" show={ currentBoard == 'round' && roomPlayer.name == this.player.displayName }>
 						<button class="btn btn-sm btn-success" type="button" onclick={ bid } show={ currentBoard == 'round' && roomPlayer.name == this.player.displayName }>BID</button>
-						<span class="badge badge-info" show={ roomPlayer.name == this.player.displayName }>BALANCE</span>
+						<span class="badge badge-info" show={ roomPlayer.name == this.player.displayName }>BALANCE : {roomPlayer.balance}</span>
 					</div>
 				</div>
   		</div>
@@ -57,7 +60,7 @@
 		this.currentBoard = 'start';
 		this.countNum = "";
 		this.round = 1;
-		this.targetBid = "";
+		this.targetBid = (Math.floor(Math.random() * 10 + 1)) * 10;
 		this.bids = [];
 
 
@@ -107,6 +110,7 @@
 
 			}).then(doc => {
 				let roomPlayersRef = doc.ref.collection('players');
+
 				roomPlayersRef.doc(this.player.uid).set({
 					id: this.player.uid,
 					name: this.player.displayName,
@@ -143,7 +147,7 @@
 
 				bid(event) {
 					//bidTimer starts to count down
-					observer.trigger('bid:start');
+					//observer.trigger('bid:start');
 
 					//grab data from the players' input
 					let bidder = event.item.roomPlayer.name;
@@ -155,32 +159,59 @@
 					});
 				}
 
-
 				roomsRef.doc(roomCode).onSnapshot(queryDocumentSnapshot => {
 					//get bids array data from database
 					let bidsArr = queryDocumentSnapshot.data().bids;
 					//order data from database(reference to the lodash documentation: https://lodash.com/docs/4.17.11#orderBy
 					let highestBidObjects = _.orderBy(bidsArr, ['bidValue'], ['desc']);
-					console.log(highestBidObjects);
-					this.highestBid = parseInt(highestBidObjects[0].bidValue);
-					this.highestBidder = highestBidObjects[0].name;
-					this.secondHighestBid = parseInt(highestBidObjects[1].bidValue);
-					this.secondHighestBidder = highestBidObjects[1].name;
+					// console.log(highestBidObjects);
+					observer.trigger('bid:start');
+					if (highestBidObjects.length >= 2){
+						this.highestBid = parseInt(highestBidObjects[0].bidValue);
+						this.highestBidder = highestBidObjects[0].name;
+						this.secondHighestBid = parseInt(highestBidObjects[1].bidValue);
+						this.secondHighestBidder = highestBidObjects[1].name;
+					} else if(highestBidObjects.length == 1){
+						this.highestBid = parseInt(highestBidObjects[0].bidValue);
+						this.highestBidder = highestBidObjects[0].name;
+					}else {
+						this.highestBid = 0
+					  this.highestBidder = ''
+					  this.secondHighestBid = 0
+					  this.secondHighestBidder = '';
+					}
 					this.update();
 				});
 			});
 		});
 
-		observer.on('current:round', () => {
-			this.currentBoard = 'round';
-			getTargetBid () {
-				//how to get random number from 100-150? Now it is only 100 or 101 or 102
-				this.targetBid = Math.floor((Math.random() + 10) * 10);
-			};
-			this.getTargetBid();
-			this.update();
-		});
+		recalculateScores() {
+			let roomref = database.collection('player-rooms').doc(this.room.id)
+			let roomPlayerRef = roomref.collection('players').doc(this.player.uid);
+			roomPlayerRef.get().then(querySnapshot => {
+				console.log(querySnapshot)
+				this.player.balance = querySnapshot.data().balance
+				if (this.player.displayName == this.highestBidder){
+					this.player.balance = this.player.balance + this.targetBid - this.highestBid
+				} else if(this.player.displayName == this.secondHighestBidder){
+					this.player.balance = this.player.balance - this.secondHighestBid
+				};
 
+				roomPlayerRef.set({
+					balance: this.player.balance
+				}, {merge: true});
+
+				console.log(this.player);
+				roomref.update({
+					bids: []
+				});
+				this.targetBid = (Math.floor(Math.random() * 10 + 1)) * 10;
+				this.update();
+			});
+
+
+
+		}
 
 		//a function to toggle between start page and round page; only for coding process; delete it after finishing the whole project
 		toggle() {
