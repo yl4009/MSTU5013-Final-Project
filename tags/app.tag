@@ -18,7 +18,7 @@
 					</div>
 
 					<div class="table" hide={ currentBoard== "last"}>
-						<div id="countDownBoard" if={ currentBoard == 'start' && roomPlayers.length == 3 } class="clock">
+						<div id="countDownBoard" if={ currentBoard == 'start' && roomPlayers.length == 4 } class="clock">
 							<timer></timer>
 						</div>
 						<div id="playBoard" if={ currentBoard == 'round' }>
