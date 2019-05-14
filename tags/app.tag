@@ -113,6 +113,7 @@
 				this.room = null;
 				this.currentBoard = 'start';
 				this.round = 1;
+				this.bids = [];
 				this.update();
 			});
 		});
@@ -159,7 +160,7 @@
 					this.update();
 				});
 
-				//when the number of players in one room reaches 4, it will trigger the timer
+				//when the number of players in one room is more than 3, it will trigger the timer
 				let roomRef = roomsRef.doc(roomCode).collection('players');
 				roomRef.get().then(querySnapshot => {
 					if (querySnapshot.docs.length >= 3) {
@@ -227,14 +228,16 @@
 					this.player.balance = this.player.balance - this.secondHighestBid
         }
 
-				console.log(this.roomPlayers);
+				if(this.highestBidder) {
+					for (var i=0; i < this.roomPlayers.length; i++) {
+		        if (this.roomPlayers[i].name == this.highestBidder) {
+		            this.winnerPlayer = this.roomPlayers[i];
+		        }
+		      }
+				} else {
+					return 'No bid this time!'
+				}
 
-				for (var i=0; i < this.roomPlayers.length; i++) {
-	        if (this.roomPlayers[i].name == this.highestBidder) {
-	            this.winnerPlayer = this.roomPlayers[i];
-							break;
-	        }
-	      }
 
 				roomPlayerRef.set({
 					balance: this.player.balance
