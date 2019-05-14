@@ -29,8 +29,8 @@
 						</div>
 						<div id="winnerBoard" if={ currentBoard == 'winner' }>
 							<i class="fas fa-crown"></i>
-							<div><img id="winnerImg" src={ player.photoURL }></div>
-							<div>{ player.displayName }</div>
+							<div><img id="winnerImg" src={ winnerPlayer.photoURL }></div>
+							<div>{ winnerPlayer.displayName }</div>
 						</div>
 						<div id="rankBoard" if={ currentBoard == 'rank' }>
 							<p id="rank">Rank</p>
@@ -93,6 +93,7 @@
 		this.round = 1;
 		this.targetBid = (Math.floor(Math.random() * 10 + 1)) * 10;
 		this.bids = [];
+		this.winnerPlayer={}
 
 		firebase.auth().onAuthStateChanged(playerObj => {
 			if (playerObj) {
@@ -143,9 +144,8 @@
 
 				roomPlayersRef.doc(this.player.uid).set({id: this.player.uid, name: this.player.displayName, photo: this.player.photoURL, balance: 50});
 				return roomPlayersRef;
-
 			}).then(roomPlayersRef => {
-				roomPlayersRef.onSnapshot(querySnapshot => {
+				roomPlayersRef.orderBy("balance", "desc").onSnapshot(querySnapshot => {
 					this.roomPlayers = [];
 					querySnapshot.forEach(doc => {
 						this.roomPlayers.push(doc.data());
@@ -209,6 +209,7 @@
 			});
 		});
 
+
 		recalculateScores() {
 			let roomref = database.collection('player-rooms').doc(this.room.id);
 			let roomPlayerRef = roomref.collection('players').doc(this.player.uid);
@@ -219,7 +220,14 @@
 					this.player.balance = this.player.balance + this.targetBid - this.highestBid
 				} else if (this.player.displayName == this.secondHighestBidder) {
 					this.player.balance = this.player.balance - this.secondHighestBid
-				};
+        }
+
+				for (var i=0; i < this.roomPlayers.length; i++) {
+	        if (this.roomPlayers[i].displayName == this.highestBidder) {
+	            this.winnerPlayer = this.roomPlayers[i];
+							break;
+	        }
+	      }
 
 				roomPlayerRef.set({
 					balance: this.player.balance
@@ -266,6 +274,14 @@
 			height: 200px;
 			background-color: #fff;
 			margin: auto;
+		}
+		.carousel-indicators li {
+		  background-color: #999;
+		  background-color: rgba(70, 70, 70, 0.25);
+		}
+
+		.carousel-indicators .active {
+		  background-color: #444;
 		}
 		. #countNum {
 			font-size: 100px;
