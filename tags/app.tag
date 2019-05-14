@@ -17,7 +17,7 @@
 					</div>
 
 					<div class="table" hide={ currentBoard== "last"}>
-						<div id="countDownBoard" if={ currentBoard == 'start' && roomPlayers.length == 4 } class="clock">
+						<div id="countDownBoard" if={ currentBoard == 'start' && roomPlayers.length >= 3 } class="clock">
 							<timer></timer>
 						</div>
 						<div id="playBoard" if={ currentBoard == 'round' }>
@@ -28,8 +28,8 @@
 						</div>
 						<div id="winnerBoard" if={ currentBoard == 'winner' }>
 							<i class="fas fa-crown"></i>
-							<div><img id="winnerImg" src={ winnerPlayer.photoURL }></div>
-							<div>{ winnerPlayer.displayName }</div>
+							<div><img id="winnerImg" src={ winnerPlayer.photo }></div>
+							<div>{ winnerPlayer.name }</div>
 						</div>
 						<div id="rankBoard" if={ currentBoard == 'rank' }>
 							<p id="rank">Rank</p>
@@ -144,7 +144,11 @@
 			}).then(doc => {
 				let roomPlayersRef = doc.ref.collection('players');
 
-				roomPlayersRef.doc(this.player.uid).set({id: this.player.uid, name: this.player.displayName, photo: this.player.photoURL, balance: 100});
+				roomPlayersRef.doc(this.player.uid).set({
+					id: this.player.uid,
+					name: this.player.displayName,
+					photo: this.player.photoURL,
+					balance: 100});
 				return roomPlayersRef;
 			}).then(roomPlayersRef => {
 				roomPlayersRef.orderBy("balance", "desc").onSnapshot(querySnapshot => {
@@ -158,7 +162,7 @@
 				//when the number of players in one room reaches 4, it will trigger the timer
 				let roomRef = roomsRef.doc(roomCode).collection('players');
 				roomRef.get().then(querySnapshot => {
-					if (querySnapshot.docs.length = 4) {
+					if (querySnapshot.docs.length >= 3) {
 						observer.trigger('timer:start');
 					}
 				});
@@ -197,7 +201,6 @@
 						this.highestBidder = highestBidObjects[0].name;
 						this.secondHighestBid = parseInt(highestBidObjects[1].bidValue);
 						this.secondHighestBidder = highestBidObjects[1].name;
-						this.winner = highestBidObjects[0].name;
 					} else if (highestBidObjects.length == 1) {
 						this.highestBid = parseInt(highestBidObjects[0].bidValue);
 						this.highestBidder = highestBidObjects[0].name;
@@ -224,8 +227,10 @@
 					this.player.balance = this.player.balance - this.secondHighestBid
         }
 
+				console.log(this.roomPlayers);
+
 				for (var i=0; i < this.roomPlayers.length; i++) {
-	        if (this.roomPlayers[i].displayName == this.highestBidder) {
+	        if (this.roomPlayers[i].name == this.highestBidder) {
 	            this.winnerPlayer = this.roomPlayers[i];
 							break;
 	        }
