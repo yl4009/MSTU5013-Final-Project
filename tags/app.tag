@@ -163,7 +163,7 @@
 				//when the number of players in one room is more than 3, it will trigger the timer
 				let roomRef = roomsRef.doc(roomCode).collection('players');
 				roomRef.get().then(querySnapshot => {
-					if (querySnapshot.docs.length = 3) {
+					if (querySnapshot.docs.length == 3) {
 						observer.trigger('timer:start');
 					}
 				});
