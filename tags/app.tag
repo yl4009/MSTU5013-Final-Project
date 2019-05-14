@@ -6,7 +6,6 @@
 			<div class="col">
 				<div id="board" if={ room }>
 					<h2>Room:{ room.id }</h2>
-					<button class="btn btn-secondary" type="button" onclick={ toggle }>TOGGLE</button>
 					<div if={ currentBoard == 'round' } class="row align-items-center ">
 						<span style='font-size: 16pt;' class="col-3 badge badge-primary">ROUND: { round }</span>
 						<span style='font-size: 16pt;' class="col-3 badge badge-warning">Target Bid: { targetBid }
@@ -18,7 +17,7 @@
 					</div>
 
 					<div class="table" hide={ currentBoard== "last"}>
-						<div id="countDownBoard" if={ currentBoard == 'start' && roomPlayers.length == 3 } class="clock">
+						<div id="countDownBoard" if={ currentBoard == 'start' && roomPlayers.length == 4 } class="clock">
 							<timer></timer>
 						</div>
 						<div id="playBoard" if={ currentBoard == 'round' }>
@@ -43,6 +42,7 @@
 							</div>
 						</div>
 					</div>
+					<button class="btn btn-secondary" type="button" onclick={ toggle } show={ this.currentBoard == 'rank' } disabled={ this.currentBoard !== 'rank' }>Want to learn more about the secret of the game?</button>
 					<div if={ currentBoard !== 'rank'} hide={ currentBoard== "last"} each={ roomPlayer in roomPlayers }>
 						<!-- <span if={ currentBoard == 'round'} class="badge badge-info"><i class="fas fa-hand-holding-usd"></i>{ here should be every bid that each player make }</span>-->
 						<strong>{ roomPlayer.name }</strong>:
@@ -111,6 +111,8 @@
 			let roomPlayerRef = database.collection('player-rooms').doc(this.room.id).collection('players').doc(this.player.uid);
 			roomPlayerRef.delete().then(() => {
 				this.room = null;
+				this.currentBoard = 'start';
+				this.round = 1;
 				this.update();
 			});
 		});
@@ -142,7 +144,7 @@
 			}).then(doc => {
 				let roomPlayersRef = doc.ref.collection('players');
 
-				roomPlayersRef.doc(this.player.uid).set({id: this.player.uid, name: this.player.displayName, photo: this.player.photoURL, balance: 50});
+				roomPlayersRef.doc(this.player.uid).set({id: this.player.uid, name: this.player.displayName, photo: this.player.photoURL, balance: 100});
 				return roomPlayersRef;
 			}).then(roomPlayersRef => {
 				roomPlayersRef.orderBy("balance", "desc").onSnapshot(querySnapshot => {
@@ -156,7 +158,7 @@
 				//when the number of players in one room reaches 4, it will trigger the timer
 				let roomRef = roomsRef.doc(roomCode).collection('players');
 				roomRef.get().then(querySnapshot => {
-					if (querySnapshot.docs.length = 3) {
+					if (querySnapshot.docs.length = 4) {
 						observer.trigger('timer:start');
 					}
 				});
@@ -195,6 +197,7 @@
 						this.highestBidder = highestBidObjects[0].name;
 						this.secondHighestBid = parseInt(highestBidObjects[1].bidValue);
 						this.secondHighestBidder = highestBidObjects[1].name;
+						this.winner = highestBidObjects[0].name;
 					} else if (highestBidObjects.length == 1) {
 						this.highestBid = parseInt(highestBidObjects[0].bidValue);
 						this.highestBidder = highestBidObjects[0].name;
@@ -214,7 +217,6 @@
 			let roomref = database.collection('player-rooms').doc(this.room.id);
 			let roomPlayerRef = roomref.collection('players').doc(this.player.uid);
 			roomPlayerRef.get().then(querySnapshot => {
-				console.log(querySnapshot)
 				this.player.balance = querySnapshot.data().balance
 				if (this.player.displayName == this.highestBidder) {
 					this.player.balance = this.player.balance + this.targetBid - this.highestBid
@@ -243,17 +245,12 @@
 
 		//a function to toggle between start page and round page; only for coding process; delete it after finishing the whole project
 		toggle() {
-			if (this.currentBoard == 'start') {
-				this.currentBoard = 'round';
-			} else if (this.currentBoard == 'round') {
-				this.currentBoard = 'winner';
-			} else if (this.currentBoard == 'winner') {
-				this.currentBoard = 'rank';
-			} else if (this.currentBoard == 'rank') {
+			if (this.currentBoard == 'rank') {
 				this.currentBoard = 'last';
-			} else if (this.currentBoard == 'last') {
-				this.currentBoard = 'start';
 			}
+
+			// if (this.currentBoard == 'start') { 	this.currentBoard = 'round'; } else if (this.currentBoard == 'round') { 	this.currentBoard = 'winner'; } else if (this.currentBoard == 'winner') { 	this.currentBoard = 'rank'; } else if (this.currentBoard ==
+			// 'rank') { 	this.currentBoard = 'last'; } else if (this.currentBoard == 'last') { 	this.currentBoard = 'start'; }
 		}
 	</script>
 
