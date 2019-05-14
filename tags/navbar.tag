@@ -24,9 +24,9 @@
 		<div id="ruleContent">
 			<h1>Welcome to our game!</h1>
 			<p>1. Decide a room code for your group and enter the room.</p>
-			<p>2. The game has 3 rounds, and for each round, you will auction off a random dollar bill ($10 -- $100) with the following rule:</p>
+			<p>2. The game has 3 rounds, and for each round, you will auction off a random dollar bill ($10 -- $100)</p>
 			<p>3. Each player will have $100 principle, but you can bid more than what you have in principle. Bids must be made in integer increment.</p>
-			<p>4. If no new bidding is called in 15 second, the bill goes to highest bidder in this round. The bill goes to the auctioneer who bid the highest. However, remember the second-highest bidder also pay the last bid he/she made, but receive nothing in
+			<p>4. If no new bidding is called in 15 second,  the bill goes to the auctioneer who bid the highest. However, remember the second-highest bidder also pay the last bid he/she made, but receive nothing in
 				return. The remaining auctioneers gain nothing and lose nothing. Who has the most money in their balance after 3 rounds will win the game.</p>
 
 		</div>
