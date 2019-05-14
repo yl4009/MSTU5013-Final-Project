@@ -6,7 +6,6 @@
 			<div class="col">
 				<div id="board" if={ room }>
 					<h2>Room:{ room.id }</h2>
-					<button class="btn btn-secondary" type="button" onclick={ toggle }>TOGGLE</button>
 					<div if={ currentBoard == 'round' } class="row align-items-center ">
 						<span style='font-size: 16pt;' class="col-3 badge badge-primary">ROUND: { round }</span>
 						<span style='font-size: 16pt;' class="col-3 badge badge-warning">Target Bid: { targetBid }
@@ -29,8 +28,8 @@
 						</div>
 						<div id="winnerBoard" if={ currentBoard == 'winner' }>
 							<i class="fas fa-crown"></i>
-							<div><img id="winnerImg" src={ player.photoURL }></div>
-							<div>{ player.displayName }</div>
+							<div><img id="winnerImg" src={ winnerPlayer.photo }></div>
+							<div>{ winnerPlayer.name }</div>
 						</div>
 						<div id="rankBoard" if={ currentBoard == 'rank' }>
 							<p id="rank">Rank</p>
@@ -43,6 +42,7 @@
 							</div>
 						</div>
 					</div>
+					<button class="btn btn-secondary" type="button" onclick={ toggle } show={ this.currentBoard == 'rank' } disabled={ this.currentBoard !== 'rank' }>Want to learn more about the secret of the game?</button>
 					<div if={ currentBoard !== 'rank'} hide={ currentBoard== "last"} each={ roomPlayer in roomPlayers }>
 						<!-- <span if={ currentBoard == 'round'} class="badge badge-info"><i class="fas fa-hand-holding-usd"></i>{ here should be every bid that each player make }</span>-->
 						<strong>{ roomPlayer.name }</strong>:
@@ -93,6 +93,7 @@
 		this.round = 1;
 		this.targetBid = (Math.floor(Math.random() * 10 + 1)) * 10;
 		this.bids = [];
+		this.winnerPlayer={}
 
 		firebase.auth().onAuthStateChanged(playerObj => {
 			if (playerObj) {
@@ -110,6 +111,9 @@
 			let roomPlayerRef = database.collection('player-rooms').doc(this.room.id).collection('players').doc(this.player.uid);
 			roomPlayerRef.delete().then(() => {
 				this.room = null;
+				this.currentBoard = 'start';
+				this.round = 1;
+				this.bids = [];
 				this.update();
 			});
 		});
@@ -141,11 +145,14 @@
 			}).then(doc => {
 				let roomPlayersRef = doc.ref.collection('players');
 
-				roomPlayersRef.doc(this.player.uid).set({id: this.player.uid, name: this.player.displayName, photo: this.player.photoURL, balance: 50});
+				roomPlayersRef.doc(this.player.uid).set({
+					id: this.player.uid,
+					name: this.player.displayName,
+					photo: this.player.photoURL,
+					balance: 100});
 				return roomPlayersRef;
-
 			}).then(roomPlayersRef => {
-				roomPlayersRef.onSnapshot(querySnapshot => {
+				roomPlayersRef.orderBy("balance", "desc").onSnapshot(querySnapshot => {
 					this.roomPlayers = [];
 					querySnapshot.forEach(doc => {
 						this.roomPlayers.push(doc.data());
@@ -153,10 +160,10 @@
 					this.update();
 				});
 
-				//when the number of players in one room reaches 4, it will trigger the timer
+				//when the number of players in one room is more than 3, it will trigger the timer
 				let roomRef = roomsRef.doc(roomCode).collection('players');
 				roomRef.get().then(querySnapshot => {
-					if (querySnapshot.docs.length = 3) {
+					if (querySnapshot.docs.length == 3) {
 						observer.trigger('timer:start');
 					}
 				});
@@ -209,17 +216,28 @@
 			});
 		});
 
+
 		recalculateScores() {
 			let roomref = database.collection('player-rooms').doc(this.room.id);
 			let roomPlayerRef = roomref.collection('players').doc(this.player.uid);
 			roomPlayerRef.get().then(querySnapshot => {
-				console.log(querySnapshot)
 				this.player.balance = querySnapshot.data().balance
 				if (this.player.displayName == this.highestBidder) {
 					this.player.balance = this.player.balance + this.targetBid - this.highestBid
 				} else if (this.player.displayName == this.secondHighestBidder) {
 					this.player.balance = this.player.balance - this.secondHighestBid
-				};
+        }
+
+				if(this.highestBidder) {
+					for (var i=0; i < this.roomPlayers.length; i++) {
+		        if (this.roomPlayers[i].name == this.highestBidder) {
+		            this.winnerPlayer = this.roomPlayers[i];
+		        }
+		      }
+				} else {
+					return 'No bid this time!'
+				}
+
 
 				roomPlayerRef.set({
 					balance: this.player.balance
@@ -235,17 +253,12 @@
 
 		//a function to toggle between start page and round page; only for coding process; delete it after finishing the whole project
 		toggle() {
-			if (this.currentBoard == 'start') {
-				this.currentBoard = 'round';
-			} else if (this.currentBoard == 'round') {
-				this.currentBoard = 'winner';
-			} else if (this.currentBoard == 'winner') {
-				this.currentBoard = 'rank';
-			} else if (this.currentBoard == 'rank') {
+			if (this.currentBoard == 'rank') {
 				this.currentBoard = 'last';
-			} else if (this.currentBoard == 'last') {
-				this.currentBoard = 'start';
 			}
+
+			// if (this.currentBoard == 'start') { 	this.currentBoard = 'round'; } else if (this.currentBoard == 'round') { 	this.currentBoard = 'winner'; } else if (this.currentBoard == 'winner') { 	this.currentBoard = 'rank'; } else if (this.currentBoard ==
+			// 'rank') { 	this.currentBoard = 'last'; } else if (this.currentBoard == 'last') { 	this.currentBoard = 'start'; }
 		}
 	</script>
 
@@ -266,6 +279,14 @@
 			height: 200px;
 			background-color: #fff;
 			margin: auto;
+		}
+		.carousel-indicators li {
+		  background-color: #999;
+		  background-color: rgba(70, 70, 70, 0.25);
+		}
+
+		.carousel-indicators .active {
+		  background-color: #444;
 		}
 		. #countNum {
 			font-size: 100px;
